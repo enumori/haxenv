@@ -5,7 +5,7 @@ Simple Haxe version management
 powershellを起動して以下のコマンドを入力します。
 ```
 Set-ExecutionPolicy RemoteSigned -scope Process
-Invoke-WebRequest -Uri "https://github.com/enumori/haxenv/releases/download/2021.03.15/haxenv.zip" -OutFile .\haxenv.zip
+Invoke-WebRequest -Uri "https://github.com/enumori/haxenv/releases/download/2021.03.16/haxenv.zip" -OutFile .\haxenv.zip
 Expand-Archive -Path .\haxenv.zip -DestinationPath $env:USERPROFILE
 Remove-Item .\haxenv.zip
 Rename-Item  $env:USERPROFILE\haxenv  $env:USERPROFILE\.haxenv
