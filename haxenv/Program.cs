@@ -392,6 +392,10 @@ namespace haxenv
             {
                 return ret_code;
             }
+            if ((ret_code = SetupHaxeLib(version)) != ErrorCode.NO_ERROR)
+            {
+                return ret_code;
+            }
             return ret_code;
         }
         static string WaitChar()
@@ -555,7 +559,31 @@ namespace haxenv
             return ret_code;
         }
 
+        static ErrorCode SetupHaxeLib(string version)
+        {
+            ErrorCode ret_code = ErrorCode.NO_ERROR;
 
+            string dir = System.IO.Path.Combine(_AppDir, "lib");
+            string hexlib = System.IO.Path.Combine(_HaxeDir, version, "haxelib.exe");
+            if (!System.IO.Directory.Exists(dir))
+            {
+                System.IO.Directory.CreateDirectory(dir);
+                Process p;
+
+                p = new Process();
+                p.StartInfo.FileName = System.Environment.GetEnvironmentVariable("ComSpec");
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WorkingDirectory = dir;
+                p.StartInfo.Arguments = string.Format("/c \"\"{0}\" setup {1}", hexlib, "\"" + dir + "\"\"");
+                p.Start();
+                p.WaitForExit();
+                p.Close();
+
+
+            }
+            return ret_code;
+        }
 
 
         static string ExtractToDirectoryExtensions(string sourceArchiveFileName, string destinationDirectoryName, bool overwrite)
