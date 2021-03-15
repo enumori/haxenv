@@ -46,5 +46,18 @@ namespace haxenv.Properties {
                 this["HaxeURL"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-{0}.zi" +
+            "p")]
+        public string NekoURL {
+            get {
+                return ((string)(this["NekoURL"]));
+            }
+            set {
+                this["NekoURL"] = value;
+            }
+        }
     }
 }

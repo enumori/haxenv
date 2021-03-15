@@ -8,5 +8,8 @@
     <Setting Name="HaxeURL" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://github.com/HaxeFoundation/haxe/releases/download/{0}/haxe-{0}-{1}.zip</Value>
     </Setting>
+    <Setting Name="NekoURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-{0}.zip</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

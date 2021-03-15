@@ -388,6 +388,10 @@ namespace haxenv
             {
                 return ret_code;
             }
+            if ((ret_code = DownloadNeko(version)) != ErrorCode.NO_ERROR)
+            {
+                return ret_code;
+            }
             return ret_code;
         }
         static string WaitChar()
@@ -490,16 +494,14 @@ namespace haxenv
             if (!System.IO.Directory.Exists(dir))
             {
                 System.Console.WriteLine("Haxe(" + version + ")をインストール中");
-                string download = "";
+                string download = "haxe.zip";
                 string url = "";
                 if (Environment.Is64BitOperatingSystem)
                 {
-                    download = "haxe-win64.zip";
                     url = string.Format(Properties.Settings.Default.HaxeURL, version, "win64");
                 }
                 else
                 {
-                    download = "haxe-win.zip";
                     url = string.Format(Properties.Settings.Default.HaxeURL, version, "win");
                 }
                 System.Net.WebClient wc = new System.Net.WebClient();
@@ -515,15 +517,62 @@ namespace haxenv
             }
             return ret_code;
         }
+        static ErrorCode DownloadNeko(string version)
+        {
+            ErrorCode ret_code = ErrorCode.NO_ERROR;
+
+            string dir = System.IO.Path.Combine(_HaxeDir, version);
+
+            if (System.IO.Directory.Exists(dir))
+            {
+                System.Console.WriteLine("Nekoをインストール中");
+                string download = "neko.zip";
+                string url = "";
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    url = string.Format(Properties.Settings.Default.NekoURL, "win64");
+                }
+                else
+                {
+                    url = string.Format(Properties.Settings.Default.NekoURL, "win64");
+                }
+                System.Net.WebClient wc = new System.Net.WebClient();
+                download = System.IO.Path.Combine(_HaxeDir, download);
+                System.Diagnostics.Debug.WriteLine("ダウンロード: " + url + " -> " + download);
+                wc.DownloadFile(url, download);
+                wc.Dispose();
+                var neko_dir = ExtractToDirectoryExtensions(download, _HaxeDir, true);
+                neko_dir = System.IO.Path.Combine(_HaxeDir, neko_dir);
+                System.IO.File.Delete(download);
+                var files = System.IO.Directory.GetFiles(neko_dir, "*", System.IO.SearchOption.TopDirectoryOnly);
+                foreach(var src_file in files)
+                {
+                    var dst_file = System.IO.Path.Combine(dir, System.IO.Path.GetFileName(src_file));
+                    System.IO.File.Copy(src_file, dst_file, true);
+                }
+                DeleteDirectory(neko_dir);
+            }
+            return ret_code;
+        }
+
+
+
+
         static string ExtractToDirectoryExtensions(string sourceArchiveFileName, string destinationDirectoryName, bool overwrite)
         {
             string top_name = "";
             using (ZipArchive archive = ZipFile.OpenRead(sourceArchiveFileName))
             {
-                top_name = archive.Entries[0].FullName;
+                top_name = System.IO.Directory.GetParent(archive.Entries[0].FullName).FullName.Split('\\').Last();
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
-                    var fullPath = System.IO.Path.Combine(destinationDirectoryName, entry.FullName);
+                    var fullPath = System.IO.Path.Combine(destinationDirectoryName, entry.FullName).Replace('/', '\\');
+
+                    var parent = System.IO.Directory.GetParent(fullPath).FullName;
+                    if (!System.IO.Directory.Exists(parent))
+                    {
+                        System.IO.Directory.CreateDirectory(parent);
+                    }
                     if (string.IsNullOrEmpty(entry.Name))
                     {
                         if (!System.IO.Directory.Exists(fullPath))
